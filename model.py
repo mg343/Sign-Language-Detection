@@ -28,5 +28,13 @@ for layer in vgg19.layers:
 model = Sequential()
 model.add(vgg19)
 model.add(Flatten())
-model.add(Dense(2,activation='sigmoid'))
+model.add(Dense(27,activation='sigmoid'))
 model.summary()
+
+model.compile(optimizer="adam",loss="categorical_crossentropy",metrics ="accuracy")
+history = model.fit_generator(generator=train_generator,
+                              steps_per_epoch=len(train_generator)//32,
+                              epochs=20,validation_data=val_generator,
+                              validation_steps=len(val_generator)//32)
+
+model.evaluate_generator(test_generator)

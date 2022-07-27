@@ -37,4 +37,4 @@ history = model.fit_generator(generator=train_generator,
                               epochs=20,validation_data=val_generator,
                               validation_steps=len(val_generator)//32)
 
-model.evaluate_generator(test_generator)
+model.save('signlanguage.h5')

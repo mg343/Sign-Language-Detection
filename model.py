@@ -18,3 +18,15 @@ val_generator = train_datagen.flow_from_directory(directory=val_dir,target_size=
 
 test_datagen = ImageDataGenerator(rescale=1.0/255)
 test_generator = train_datagen.flow_from_directory(directory=val_dir,target_size=(128,128),class_mode='categorical',batch_size=32)
+
+
+vgg19 = VGG19(weights='imagenet',include_top=False,input_shape=(128,128,3))
+
+for layer in vgg19.layers:
+    layer.trainable = False
+    
+model = Sequential()
+model.add(vgg19)
+model.add(Flatten())
+model.add(Dense(2,activation='sigmoid'))
+model.summary()

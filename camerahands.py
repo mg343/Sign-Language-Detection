@@ -83,6 +83,10 @@
 
 import cv2
 import mediapipe as mp
+from keras.models import load_model
+
+
+model = load_model('signlanguage.h5')
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()

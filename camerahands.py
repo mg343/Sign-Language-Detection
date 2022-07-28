@@ -1,9 +1,11 @@
+from turtle import end_fill
 import cv2
 import mediapipe as mp
 from keras.models import load_model
+import numpy as np
+import time
 
-
-# model = load_model('signlanguage.h5')
+model = load_model('signlanguage.h5')
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()
@@ -30,6 +32,7 @@ while True:
             # SPACE pressed
             img_name = "opencv_frame_{}.png".format(img_counter)
             analysisframe = frame
+            showframe = analysisframe
             cv2.imwrite(img_name, frame)
             print("{} written!".format(img_name))
             img_counter += 1
@@ -62,9 +65,18 @@ while True:
                 mp_drawing.draw_landmarks(frame, handLMs, mphands.HAND_CONNECTIONS)
         cv2.imshow("Frame", frame)
     else:
-        cv2.imshow("Frame", analysisframe)
-
-
-
+        if img_counter == 1:
+            cv2.imshow("Frame", showframe)
+            analysisframe = cv2.resize(analysisframe,(128,128))
+            analysisframe = np.reshape(analysisframe,[1,128,128,3])
+            analysisframe = analysisframe/255.0
+            prediction = model.predict(analysisframe)
+            print("Predicted Letter: ",prediction[0])
+            img_counter += 1
+        else:
+            print('Analysis Finished, Closing in 5 Seconds')
+            time.sleep(5)
+            break
+        break
     cap.release()
     cv2.destroyAllWindows()

@@ -33,8 +33,10 @@ while True:
         break
     elif k%256 == 32:
         # SPACE pressed
+        img_name = "opencv_frame_{}.png".format(img_counter)
         analysisframe = frame
         showframe = analysisframe
+        cv2.imwrite(img_name, frame)
         cv2.imshow("Frame", showframe)
         analysisframe = cv2.resize(analysisframe,(128,128))
         analysisframe = np.reshape(analysisframe,[1,128,128,3])
@@ -70,7 +72,6 @@ while True:
             x_min -= 20
             x_max += 20
             cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-            mp_drawing.draw_landmarks(frame, handLMs, mphands.HAND_CONNECTIONS)
     cv2.imshow("Frame", frame)
 
 cap.release()

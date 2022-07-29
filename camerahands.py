@@ -1,9 +1,13 @@
-from turtle import end_fill
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import tensorflow as tf
 import cv2
 import mediapipe as mp
 from keras.models import load_model
 import numpy as np
 import time
+
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 model = load_model('signlanguage.h5')
 
@@ -40,9 +44,7 @@ while True:
         maxindex = np.argmax(predarray)
         print("Predicted Letter: ", letterpred[maxindex])
         print('Prediction Array: ', prediction[0])
-        print("Analysis complete, closing in 5 seconds...")
         time.sleep(5)
-        break
 
     framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hands.process(framergb)

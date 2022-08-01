@@ -59,7 +59,6 @@ while True:
         break
     elif k%256 == 32:
         # SPACE pressed
-        img_name = "opencv_frame_{}.png".format(img_counter)
         analysisframe = frame
         showframe = analysisframe
 
@@ -88,16 +87,27 @@ while True:
                 x_max += 20
 
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
-        cv2.imwrite(img_name, analysisframe)
         cv2.imshow("Frame", showframe)
         analysisframe = cv2.resize(analysisframe,(128,128))
         analysisframe = np.reshape(analysisframe,[1,128,128,3])
         analysisframe = analysisframe/255.0
         prediction = model.predict(analysisframe)
         predarray = np.array(prediction[0])
-        maxindex = np.argmax(predarray)
-        print("Predicted Letter: ", letterpred[maxindex])
-        print('Prediction Array: ', prediction[0])
+        letter_prediction_dict = {letterpred[i]: predarray[i] for i in range(len(letterpred))}
+        predarrayordered = sorted(predarray, reverse=True)
+        high1 = predarrayordered[0]
+        high2 = predarrayordered[1]
+        high3 = predarrayordered[2]
+        for key,value in letter_prediction_dict.items():
+            if value==high1:
+                print("Predicted Letter 1: ", key)
+                print('Confidence 1: ', 100*value)
+            elif value==high2:
+                print("Predicted Letter 2: ", key)
+                print('Confidence 2: ', 100*value)
+            elif value==high3:
+                print("Predicted Letter 3: ", key)
+                print('Confidence 3: ', 100*value)
         time.sleep(5)
 
     framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

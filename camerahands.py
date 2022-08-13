@@ -7,9 +7,7 @@ from keras.models import load_model
 import numpy as np
 import time
 
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-
-model = load_model('signlanguage.h5')
+model = load_model('signlanguageactual.h5')
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()
@@ -20,35 +18,9 @@ _, frame = cap.read()
 
 h, w, c = frame.shape
 
-# def bbox(pic):
-#     framergb = cv2.cvtColor(pic, cv2.COLOR_BGR2RGB)
-#     result = hands.process(framergb)
-#     hand_landmarks = result.multi_hand_landmarks
-#     if hand_landmarks:
-#         for handLMs in hand_landmarks:
-#             x_max = 0
-#             y_max = 0
-#             x_min = w
-#             y_min = h
-#             for lm in handLMs.landmark:
-#                 x, y = int(lm.x * w), int(lm.y * h)
-#                 if x > x_max:
-#                     x_max = x
-#                 if x < x_min:
-#                     x_min = x
-#                 if y > y_max:
-#                     y_max = y
-#                 if y < y_min:
-#                     y_min = y
-#             y_min -= 20
-#             y_max += 20
-#             x_min -= 20
-#             x_max += 20
-
-
 img_counter = 0
 analysisframe = ''
-letterpred = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'Space', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+letterpred = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 while True:
     _, frame = cap.read()
 
@@ -84,7 +56,7 @@ while True:
                 y_min -= 20
                 y_max += 20
                 x_min -= 20
-                x_max += 20
+                x_max += 20 
 
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
         cv2.imshow("Frame", showframe)
@@ -100,13 +72,13 @@ while True:
         high3 = predarrayordered[2]
         for key,value in letter_prediction_dict.items():
             if value==high1:
-                print("Predicted Letter 1: ", key)
+                print("Predicted Character 1: ", key)
                 print('Confidence 1: ', 100*value)
             elif value==high2:
-                print("Predicted Letter 2: ", key)
+                print("Predicted Character 2: ", key)
                 print('Confidence 2: ', 100*value)
             elif value==high3:
-                print("Predicted Letter 3: ", key)
+                print("Predicted Character 3: ", key)
                 print('Confidence 3: ', 100*value)
         time.sleep(5)
 

@@ -6,8 +6,9 @@ import mediapipe as mp
 from keras.models import load_model
 import numpy as np
 import time
+import pandas as pd
 
-model = load_model('signlanguageactual.h5')
+model = load_model('smnist.h5')
 
 mphands = mp.solutions.hands
 hands = mphands.Hands()
@@ -20,7 +21,7 @@ h, w, c = frame.shape
 
 img_counter = 0
 analysisframe = ''
-letterpred = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+letterpred = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y']
 while True:
     _, frame = cap.read()
 
@@ -33,7 +34,7 @@ while True:
         # SPACE pressed
         analysisframe = frame
         showframe = analysisframe
-
+        cv2.imshow("Frame", showframe)
         framergbanalysis = cv2.cvtColor(analysisframe, cv2.COLOR_BGR2RGB)
         resultanalysis = hands.process(framergbanalysis)
         hand_landmarksanalysis = resultanalysis.multi_hand_landmarks
@@ -58,12 +59,28 @@ while True:
                 x_min -= 20
                 x_max += 20 
 
+        analysisframe = cv2.cvtColor(analysisframe, cv2.COLOR_BGR2GRAY)
         analysisframe = analysisframe[y_min:y_max, x_min:x_max]
-        cv2.imshow("Frame", showframe)
-        analysisframe = cv2.resize(analysisframe,(128,128))
-        analysisframe = np.reshape(analysisframe,[1,128,128,3])
-        analysisframe = analysisframe/255.0
-        prediction = model.predict(analysisframe)
+        analysisframe = cv2.resize(analysisframe,(28,28))
+
+
+        nlist = []
+        rows,cols = analysisframe.shape
+        for i in range(rows):
+            for j in range(cols):
+                k = analysisframe[i,j]
+                nlist.append(k)
+        
+        datan = pd.DataFrame(nlist).T
+        colname = []
+        for val in range(784):
+            colname.append(val)
+        datan.columns = colname
+
+        pixeldata = datan.values
+        pixeldata = pixeldata / 255
+        pixeldata = pixeldata.reshape(-1,28,28,1)
+        prediction = model.predict(pixeldata)
         predarray = np.array(prediction[0])
         letter_prediction_dict = {letterpred[i]: predarray[i] for i in range(len(letterpred))}
         predarrayordered = sorted(predarray, reverse=True)
